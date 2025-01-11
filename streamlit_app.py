@@ -79,7 +79,7 @@ def create_company_size_analysis(employed_df, size_column='회사구분'):
 
 def main():
     st.set_page_config(page_title="취업 현황 대시보드", layout="wide")
-    st.title("취업 현황 대시보드")
+    st.title("20년도~23년도 취업 현황 대시보드")
     
     file_path = "졸업자취업현황_20_21_22_23_통합.csv"
     
@@ -116,6 +116,7 @@ def main():
                                 labels={'취업률': '취업률 (%)'},
                                 title='연도별 취업률 추이')
         fig_yearly_rate.update_traces(texttemplate='%{y:.1f}%', textposition='top center')
+        fig_yearly_rate.update_xaxes(tickformat='d', dtick=1)
         st.plotly_chart(fig_yearly_rate, use_container_width=True)
         
         fig_yearly_status = px.bar(yearly_stats, 
@@ -129,6 +130,7 @@ def main():
             yaxis_title="인원 수",
             legend_title="구분"
         )
+        fig_yearly_status.update_xaxes(tickformat='d', dtick=1)
         st.plotly_chart(fig_yearly_status, use_container_width=True)
         
         col1, col2 = st.columns([1, 2])
