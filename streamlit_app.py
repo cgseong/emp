@@ -12,16 +12,20 @@ def load_and_process_data(file_path):
         except UnicodeDecodeError:
             df = pd.read_csv(file_path, encoding='cp949')
             
-        employed_df = df[df['취업구분1'] == '취업'].copy()
+       # 진학과 외국인 제외
+        df_filtered = df[~df['취업구분1'].isin(['진학', '외국인'])]
+        
+        # 취업자 필터링
+        employed_df = df_filtered[df_filtered['취업구분1'] == '취업'].copy()
         
         total_stats = {
-            'total': len(df),
+            'total': len(df_filtered),  # 전체 대상자 (진학, 외국인 제외)
             'employed': len(employed_df),
-            'unemployed': len(df) - len(employed_df),
-            'employment_rate': (len(employed_df) / len(df) * 100) if len(df) > 0 else 0
+            'unemployed': len(df_filtered) - len(employed_df),
+            'employment_rate': (len(employed_df) / len(df_filtered) * 100) if len(df_filtered) > 0 else 0
         }
         
-        return df, employed_df, total_stats
+        return df_filtered, employed_df, total_stats
     
     except Exception as e:
         st.error(f"데이터 로드 중 오류 발생: {str(e)}")
