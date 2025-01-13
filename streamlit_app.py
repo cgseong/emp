@@ -82,7 +82,7 @@ def create_company_size_analysis(employed_df, size_column='회사구분'):
     return size_stats
 
 def main():
-    st.set_page_config(page_title="취업 현황 대시보드", layout="wide")
+    st.set_page_config(page_title="취업 현황(진학자/외국인제외)", layout="wide")
     st.title("20년도~23년도 취업 현황 대시보드")
     
     file_path = "졸업자취업현황_20_21_22_23_통합.csv"
