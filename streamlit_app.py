@@ -113,15 +113,15 @@ def main():
     st.subheader("연도별 취업현황")
     yearly_stats = create_yearly_analysis(df)
     if not yearly_stats.empty:
-        fig_yearly_rate = px.line(yearly_stats, 
+        fig_yearly_rate = px.bar(yearly_stats, 
                                 x='연도', 
                                 y='취업률',
-                                markers=True,
+                                text='취업률',
                                 labels={'취업률': '취업률 (%)'},
                                 title='연도별 취업률 추이')
-        fig_yearly_rate.update_traces(texttemplate='%{y:.1f}%', textposition='top center')
+        fig_yearly_rate.update_traces(texttemplate='%{y:.1f}%', textposition='outside')
         fig_yearly_rate.update_xaxes(tickformat='d', dtick=1)
-        st.plotly_chart(fig_yearly_rate, use_container_width=True)
+        fig_yearly_rate.update_traces(marker_color='royalblue')
         
         fig_yearly_status = px.bar(yearly_stats, 
                                  x='연도',
