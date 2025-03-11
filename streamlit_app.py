@@ -122,6 +122,7 @@ def main():
         fig_yearly_rate.update_traces(texttemplate='%{y:.1f}%', textposition='outside')
         fig_yearly_rate.update_xaxes(tickformat='d', dtick=1)
         fig_yearly_rate.update_traces(marker_color='royalblue')
+        st.plotly_chart(fig_yearly_rate, use_container_width=True)
         
         fig_yearly_status = px.bar(yearly_stats, 
                                  x='연도',
