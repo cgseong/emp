@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
+import os
 
 def load_and_process_data(file_path):
     """CSV 파일을 로드하고 처리하는 함수"""
@@ -10,7 +12,7 @@ def load_and_process_data(file_path):
         except UnicodeDecodeError:
             df = pd.read_csv(file_path, encoding='cp949')
             
-        # 진학과 외국인 제외
+       # 진학과 외국인 제외
         df_filtered = df[~df['취업구분1'].isin(['진학', '외국인'])]
         
         # 취업자 필터링
@@ -79,6 +81,21 @@ def create_company_size_analysis(employed_df, size_column='회사구분'):
     size_stats['비율'] = (size_stats['취업자수'] / size_stats['취업자수'].sum() * 100).round(1)
     return size_stats
 
+def create_wordcloud(text, title):
+    """워드클라우드 생성 함수"""
+    wordcloud = WordCloud(
+        font_path='malgun.ttf',  # 한글 폰트 경로 (malgun.ttf 예시)
+        width=800,
+        height=400,
+        background_color='white'
+    ).generate(' '.join(text))
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.imshow(wordcloud, interpolation='bilinear')
+    ax.set_title(title, fontsize=15)
+    ax.axis('off')
+    return fig
+
 def main():
     st.set_page_config(page_title="취업 현황(진학자/외국인제외)", layout="wide")
     st.title("20년도~23년도 취업 현황 대시보드")
@@ -93,74 +110,23 @@ def main():
     
     if df is None or employed_df is None:
         return
-    
-    # 다중 조건 필터링
-    st.sidebar.header("필터 설정")
-    
-    # 연도 필터
-    years = sorted(df['조사년도'].unique())
-    selected_years = st.sidebar.multiselect(
-        "연도 선택",
-        options=years,
-        default=years
-    )
-    
-    # 지역 필터
-    regions = sorted(employed_df['기업지역'].unique())
-    selected_regions = st.sidebar.multiselect(
-        "지역 선택",
-        options=regions,
-        default=regions
-    )
-    
-    # 기업구분 필터
-    company_types = sorted(employed_df['기업구분'].unique())
-    selected_company_types = st.sidebar.multiselect(
-        "기업구분 선택",
-        options=company_types,
-        default=company_types
-    )
-    
-    # 회사구분 필터
-    company_sizes = sorted(employed_df['회사구분'].unique())
-    selected_company_sizes = st.sidebar.multiselect(
-        "회사구분 선택",
-        options=company_sizes,
-        default=company_sizes
-    )
-    
-    # 필터링 적용
-    filtered_df = employed_df[
-        (employed_df['조사년도'].isin(selected_years)) &
-        (employed_df['기업지역'].isin(selected_regions)) &
-        (employed_df['기업구분'].isin(selected_company_types)) &
-        (employed_df['회사구분'].isin(selected_company_sizes))
-    ]
-    
-    # 전체 통계 업데이트
-    filtered_total_stats = {
-        'total': len(df[df['조사년도'].isin(selected_years)]),
-        'employed': len(filtered_df),
-        'unemployed': len(df[df['조사년도'].isin(selected_years)]) - len(filtered_df),
-        'employment_rate': (len(filtered_df) / len(df[df['조사년도'].isin(selected_years)]) * 100) if len(df[df['조사년도'].isin(selected_years)]) > 0 else 0
-    }
-    
+        
     # 전체 통계
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric("전체 졸업자", f"{filtered_total_stats['total']:,}명")
+        st.metric("전체 졸업자", f"{total_stats['total']:,}명")
     with col2:
-        st.metric("취업자", f"{filtered_total_stats['employed']:,}명")
+        st.metric("취업자", f"{total_stats['employed']:,}명")
     with col3:
-        st.metric("미취업자", f"{filtered_total_stats['unemployed']:,}명")
+        st.metric("미취업자", f"{total_stats['unemployed']:,}명")
     with col4:
-        st.metric("취업률", f"{filtered_total_stats['employment_rate']:.1f}%")
+        st.metric("취업률", f"{total_stats['employment_rate']:.1f}%")
     
     st.markdown("---")
     
     # 연도별 분석
     st.subheader("연도별 취업현황")
-    yearly_stats = create_yearly_analysis(df[df['조사년도'].isin(selected_years)])
+    yearly_stats = create_yearly_analysis(df)
     if not yearly_stats.empty:
         fig_yearly_rate = px.bar(yearly_stats, 
                                 x='연도', 
@@ -186,11 +152,34 @@ def main():
         )
         fig_yearly_status.update_xaxes(tickformat='d', dtick=1)
         st.plotly_chart(fig_yearly_status, use_container_width=True)
+        
+        col1, col2 = st.columns([1, 2])
+        with col1:
+            st.subheader("연도별 통계")
+            st.dataframe(yearly_stats.style.format({
+                '전체인원': '{:,}명',
+                '취업자수': '{:,}명',
+                '미취업자수': '{:,}명',
+                '취업률': '{:.1f}%'
+            }), use_container_width=True)
+        
+        with col2:
+            st.subheader("주요 통계")
+            metrics_col1, metrics_col2, metrics_col3 = st.columns(3)
+            with metrics_col1:
+                max_rate_year = yearly_stats.loc[yearly_stats['취업률'].idxmax()]
+                st.metric("최고 취업률", f"{max_rate_year['취업률']}%", f"{max_rate_year['연도']}년")
+            with metrics_col2:
+                min_rate_year = yearly_stats.loc[yearly_stats['취업률'].idxmin()]
+                st.metric("최저 취업률", f"{min_rate_year['취업률']}%", f"{min_rate_year['연도']}년")
+            with metrics_col3:
+                avg_rate = yearly_stats['취업률'].mean()
+                st.metric("평균 취업률", f"{avg_rate:.1f}%")
     
     st.markdown("---")
     
     # 지역별 분석
-    regional_stats = create_regional_analysis(filtered_df)
+    regional_stats = create_regional_analysis(employed_df)
     if not regional_stats.empty:
         st.subheader("취업자 지역 분포")
         fig_region = px.bar(regional_stats, 
@@ -205,7 +194,7 @@ def main():
     # 기업 분석
     col1, col2 = st.columns(2)
     with col1:
-        company_stats = create_company_type_analysis(filtered_df)
+        company_stats = create_company_type_analysis(employed_df)
         if not company_stats.empty:
             st.subheader("기업구분별 분포")
             fig_company = px.pie(company_stats, 
@@ -213,9 +202,10 @@ def main():
                                names='기업구분',
                                title='기업구분별 취업자 분포')
             st.plotly_chart(fig_company, use_container_width=True)
+            st.dataframe(company_stats, use_container_width=True)
     
     with col2:
-        size_stats = create_company_size_analysis(filtered_df)
+        size_stats = create_company_size_analysis(employed_df)
         if not size_stats.empty:
             st.subheader("회사구분별 분포")
             fig_size = px.pie(size_stats, 
@@ -223,10 +213,32 @@ def main():
                             names='회사구분',
                             title='회사구분별 취업자 분포')
             st.plotly_chart(fig_size, use_container_width=True)
+            st.dataframe(size_stats, use_container_width=True)
     
     # 상세 데이터
     st.markdown("---")
     st.subheader("상세 데이터")
+    
+    filter_col1, filter_col2 = st.columns([1, 3])
+    with filter_col1:
+        years = sorted(df['조사년도'].unique())
+        selected_year = st.selectbox("연도 선택", ["전체"] + list(years))
+    
+    with filter_col2:
+        search = st.text_input("데이터 검색", "")
+    
+    filtered_df = employed_df.copy()
+    
+    if selected_year != "전체":
+        filtered_df = filtered_df[filtered_df['조사년도'] == selected_year]
+    
+    if search:
+        filtered_df = filtered_df[
+            filtered_df.astype(str).apply(
+                lambda x: x.str.contains(search, case=False, na=False)
+            ).any(axis=1)
+        ]
+    
     st.write(f"검색된 데이터: {len(filtered_df):,}건")
     st.dataframe(filtered_df, use_container_width=True)
 
