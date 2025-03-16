@@ -81,6 +81,21 @@ def create_company_size_analysis(employed_df, size_column='회사구분'):
     size_stats['비율'] = (size_stats['취업자수'] / size_stats['취업자수'].sum() * 100).round(1)
     return size_stats
 
+def create_wordcloud(text, title):
+    """워드클라우드 생성 함수"""
+    wordcloud = WordCloud(
+        font_path='malgun.ttf',  # 한글 폰트 경로 (malgun.ttf 예시)
+        width=800,
+        height=400,
+        background_color='white'
+    ).generate(' '.join(text))
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.imshow(wordcloud, interpolation='bilinear')
+    ax.set_title(title, fontsize=15)
+    ax.axis('off')
+    return fig
+
 def main():
     st.set_page_config(page_title="취업 현황(진학자/외국인제외)", layout="wide")
     st.title("20년도~23년도 취업 현황 대시보드")
@@ -199,6 +214,26 @@ def main():
                             title='회사구분별 취업자 분포')
             st.plotly_chart(fig_size, use_container_width=True)
             st.dataframe(size_stats, use_container_width=True)
+    
+    st.markdown("---")
+    st.subheader("기업명/직무별 워드클라우드")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        company_names = employed_df['기업명'].dropna().tolist()
+        if company_names:
+            company_wordcloud = create_wordcloud(company_names, "기업명 워드클라우드")
+            st.pyplot(company_wordcloud)
+        else:
+            st.write("기업명 데이터가 없습니다.")
+    
+    with col2:
+        job_titles = employed_df['직무'].dropna().tolist()
+        if job_titles:
+            job_wordcloud = create_wordcloud(job_titles, "직무별 워드클라우드")
+            st.pyplot(job_wordcloud)
+        else:
+            st.write("직무 데이터가 없습니다.")
     
     # 상세 데이터
     st.markdown("---")
