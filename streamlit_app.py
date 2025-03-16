@@ -215,26 +215,6 @@ def main():
             st.plotly_chart(fig_size, use_container_width=True)
             st.dataframe(size_stats, use_container_width=True)
     
-    st.markdown("---")
-    st.subheader("기업명/직무별 워드클라우드")
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        company_names = employed_df['기업명'].dropna().tolist()
-        if company_names:
-            company_wordcloud = create_wordcloud(company_names, "기업명 워드클라우드")
-            st.pyplot(company_wordcloud)
-        else:
-            st.write("기업명 데이터가 없습니다.")
-    
-    with col2:
-        job_titles = employed_df['직무'].dropna().tolist()
-        if job_titles:
-            job_wordcloud = create_wordcloud(job_titles, "직무별 워드클라우드")
-            st.pyplot(job_wordcloud)
-        else:
-            st.write("직무 데이터가 없습니다.")
-    
     # 상세 데이터
     st.markdown("---")
     st.subheader("상세 데이터")
