@@ -404,7 +404,7 @@ class EmploymentDashboard:
 
 def main():
     st.set_page_config(page_title="취업 현황(진학자/외국인제외)", layout="wide")
-    st.title("20년도~23년도 취업 현황 대시보드")
+    st.title("20년도~23년도 취업 현황")
     
     # 대시보드 객체 생성 및 데이터 로드
     file_path = "졸업자취업현황_20_21_22_23_통합.csv"
