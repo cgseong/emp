@@ -436,9 +436,8 @@ class EmploymentDataProcessor:
                 file_size = os.path.getsize(self.file_path)
                 if file_size == 0:
                     show_message("❌ 파일이 비어있습니다.", "error")
-                    return None
+                    return None              
                 
-                st.info(f"📄 시도 중인 인코딩: {encoding.upper()}")
                 
                 # CSV 파일 읽기 (추가 옵션 포함)
                 df = pd.read_csv(
