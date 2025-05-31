@@ -421,8 +421,7 @@ class EmploymentDataProcessor:
             """)
             return False
         
-        self.file_path = abs_path
-        st.info(f"📁 파일 경로: {self.file_path}")
+        self.file_path = abs_path        
         return True
     
     def _read_csv_with_encoding(self) -> Optional[pd.DataFrame]:
