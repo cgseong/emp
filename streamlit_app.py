@@ -448,9 +448,8 @@ class EmploymentDataProcessor:
                 
                 if df.empty:
                     show_message("⚠️ 파일에서 데이터를 읽을 수 없습니다.", "warning")
-                    return None
+                    return None                
                 
-                st.success(f"✅ 파일 읽기 성공 - 인코딩: {encoding.upper()}, 행 수: {len(df):,}, 열 수: {len(df.columns)}")
                 return df
                 
             except UnicodeDecodeError as e:
