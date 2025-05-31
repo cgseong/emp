@@ -403,8 +403,7 @@ class EmploymentDataProcessor:
             
             for path in alternative_paths:
                 if os.path.exists(path):
-                    self.file_path = path
-                    st.info(f"📁 파일 경로: {self.file_path}")
+                    self.file_path = path               
                     return True
             
             # 파일을 찾지 못한 경우
