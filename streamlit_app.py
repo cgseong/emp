@@ -24,7 +24,7 @@ warnings.filterwarnings('ignore')
 
 # 앱 설정
 CONFIG = {
-    'page_title': "취업 현황 분석 대시보드",
+    'page_title': "정보컴퓨터공학부 취업 현황",
     'page_icon': "📊",
     'layout': "wide",
     'initial_sidebar_state': "expanded"
