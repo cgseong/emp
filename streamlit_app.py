@@ -41,7 +41,7 @@ DATA_CONFIG = {
 
 # 앱 메타데이터
 APP_META = {
-    'title': "📊 취업 현황 분석 대시보드",
+    'title': "📊 정보컴퓨터공학부 취업 현황",
     'subtitle': "Employment Status Analysis Dashboard",
     'version': "v2.0",
     'period': "2020년 ~ 2023년",
