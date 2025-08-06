@@ -32,7 +32,7 @@ CONFIG = {
 
 # 데이터 설정
 DATA_CONFIG = {
-    'file_path': "졸업자취업현황_20_21_22_23.csv",
+    'file_path': "졸업자취업현황_20_21_22_23_24.csv",
     'cache_ttl': 3600,  # 1시간
     'exclude_categories': ['진학', '외국인'],
     'min_year': 2000,
