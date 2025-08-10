@@ -872,7 +872,7 @@ class VisualizationModule:
         )
         
         fig.update_layout(
-            height=600,
+            height=700,
             showlegend=True,
             title_text="📈 연도별 취업 현황 분석",
             barmode='stack'
