@@ -913,7 +913,7 @@ class VisualizationModule:
             color_continuous_scale='viridis'
         )
         bar_fig.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
-        bar_fig.update_layout(height=400, showlegend=False)
+        bar_fig.update_layout(height=500, showlegend=False)
         
         # 파이 차트 (상위 8개 지역 + 기타)
         top_regions = regional_stats.head(8)
