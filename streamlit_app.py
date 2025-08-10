@@ -933,7 +933,7 @@ class VisualizationModule:
             color_discrete_sequence=px.colors.qualitative.Set3
         )
         pie_fig.update_traces(textposition='inside', textinfo='percent+label')
-        pie_fig.update_layout(height=400)
+        pie_fig.update_layout(height=500)
         
         return bar_fig, pie_fig
     
